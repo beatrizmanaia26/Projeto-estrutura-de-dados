@@ -2,50 +2,57 @@
 #define PROJETO1_H
 #include <stdio.h>
 
+// tudp que tem E na frente equivale a celula de tal procedimento
+
+// Registro do usuario
 typedef struct {
   int dia;
   int mes;
   int ano;
-}Data;
+} Data;
 
-typedef struct{
+typedef struct {
   char nome[50];
   char rg[20];
   int idade;
   Data *entrada;
-}Registro;
+} Registro;
 
-typedef struct Elista{
+// lista dinamica encadeada
+typedef struct Elista {
   Registro *dados;
   struct Elista *prox;
-}Elista;
+} Elista;
 
-typedef struct{
+typedef struct {
   Elista *inicio;
   int qtde;
-}Lista;
+} Lista;
 
-typedef struct Efila{
+// fila encadeada
+typedef struct Efila {
   Registro *dados;
   struct Efila *prox;
-}Efila;
+} Efila;
 
-typedef struct{
+typedef struct {
   Efila *head;
   Efila *tail;
   int qtde;
-}Fila;
+} Fila;
 
-typedef struct E_arvore_busca{
+// arvore binaria de busca
+// Arvore para buscar as coisas mais facil
+typedef struct E_arvore_busca {
   Registro *dados;
   struct E_arvore_busca *esq;
   struct E_arvore_busca *dir;
-}E_arvore_busca;
+} E_arvore_busca;
 
-typedef struct{
+typedef struct {
   E_arvore_busca *raiz;
   int qtde;
-}Arvore_busca;
+} Arvore_busca;
 
 // typedef struct EPilha{
 // }
@@ -53,7 +60,19 @@ typedef struct{
 // }
 
 int menu();
+void subMenuCadastrar(Lista *lista);
 
+Registro salvarPessoa();
+Elista *criaElista();
+Lista *criaLista();
+Efila *criaEfila(int valor);
+Fila *criaFila();
+E_arvore_busca *criaE_arv(int valor);
+Arvore_busca *criaArvore();
 
-//guarda de inclusao (garante que conteudo do arquivo é incluido apenas 1x em cada arquivo que o referencia)
-#endif  
+void cadastrar(Lista *lista);
+void mostrarLista(Lista *lista);
+
+// guarda de inclusao (garante que conteudo do arquivo é incluido apenas 1x em
+// cada arquivo que o referencia)
+#endif
