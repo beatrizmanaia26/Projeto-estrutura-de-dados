@@ -2,8 +2,7 @@
 #define PROJETO1_H
 #include <stdio.h>
 
-// tudp que tem E na frente equivale a celula de tal procedimento
-
+// tudo que tem E na frente equivale a celula de tal procedimento
 // Registro do usuario
 typedef struct {
   int dia;
@@ -12,8 +11,8 @@ typedef struct {
 } Data;
 
 typedef struct {
-  char nome[50];
-  char rg[20];
+  char nome[255];
+  char rg[10];
   int idade;
   Data *entrada;
 } Registro;
@@ -62,9 +61,10 @@ typedef struct {
 int menu();
 void subMenuCadastrar(Lista *lista);
 
-Registro salvarPessoa();
-Elista *criaElista();
-Lista *criaLista();
+void salvarPessoa(Registro *reg);
+//Registro *salvarPessoa();
+void criaElista(Elista *eli);
+void criaLista(Lista *lis);
 Efila *criaEfila(int valor);
 Fila *criaFila();
 E_arvore_busca *criaE_arv(int valor);
@@ -72,7 +72,7 @@ Arvore_busca *criaArvore();
 
 void cadastrar(Lista *lista);
 void mostrarLista(Lista *lista);
-
+void clearBuffer();
 // guarda de inclusao (garante que conteudo do arquivo é incluido apenas 1x em
 // cada arquivo que o referencia)
 #endif
