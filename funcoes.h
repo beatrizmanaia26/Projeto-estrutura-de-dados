@@ -11,7 +11,7 @@ typedef struct {
 } Data;
 
 typedef struct {
-  char nome[255];
+  char nome[50];
   char rg[10];
   int idade;
   Data *entrada;
@@ -61,15 +61,14 @@ typedef struct {
 int menu();
 void subMenuCadastrar(Lista *lista);
 
-void salvarPessoa(Registro *reg);
-//Registro *salvarPessoa();
-void criaElista(Elista *eli);
-void criaLista(Lista *lis);
+Registro *salvarPessoa(char *nome, int idade, char *rg, Data *data);
+Elista *criaElista(Registro *r);
+Lista *criaLista();
 Efila *criaEfila(int valor);
 Fila *criaFila();
 E_arvore_busca *criaE_arv(int valor);
 Arvore_busca *criaArvore();
-
+Data *criaData(int dia, int mes, int ano);
 void cadastrar(Lista *lista);
 void mostrarLista(Lista *lista);
 void clearBuffer();
