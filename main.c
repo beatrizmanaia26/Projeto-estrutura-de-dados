@@ -11,6 +11,9 @@ int main(void) {
     case 1:
       subMenuCadastrar(lista);
     break;
+    case 7:
+      sobre();
+    break;
     }
   } while (opcao != 0);
   return 0;

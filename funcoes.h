@@ -68,9 +68,15 @@ Efila *criaEfila(int valor);
 Fila *criaFila();
 E_arvore_busca *criaE_arv(int valor);
 Arvore_busca *criaArvore();
+
+// funções de cadastrar
 Data *criaData(int dia, int mes, int ano);
 void cadastrar(Lista *lista);
+void consultar(Lista *lista);
 void mostrarLista(Lista *lista);
+void atualizarDados(Lista *lista);
+void removerPaciente(Lista *lista);
+void sobre();
 void clearBuffer();
 // guarda de inclusao (garante que conteudo do arquivo é incluido apenas 1x em
 // cada arquivo que o referencia)
