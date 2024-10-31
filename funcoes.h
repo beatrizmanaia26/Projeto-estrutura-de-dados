@@ -53,21 +53,36 @@ typedef struct {
   int qtde;
 } Arvore_busca;
 
-// typedef struct EPilha{
-// }
-// typedef struct Pilha{
-// }
+typedef struct EPilha{
+  struct EPilha *anterior;
+  int operacao;
+  struct EPilha *prox;
+}Epilha;
 
+typedef struct Pilha{
+  Epilha *topo;
+  int qtde;
+}Pilha;
+
+// menus
 int menu();
 void subMenuCadastrar(Lista *lista);
+void subMenuAtendimento(Lista *lista, Fila *fila);
+// void subMenuPesquisa(Lista *lista);
 
+// funcoes base dos structs
 Registro *salvarPessoa(char *nome, int idade, char *rg, Data *data);
+// inicializações
 Elista *criaElista(Registro *r);
 Lista *criaLista();
-Efila *criaEfila(int valor);
+Efila *criaEfila(Registro *r);
 Fila *criaFila();
 E_arvore_busca *criaE_arv(int valor);
 Arvore_busca *criaArvore();
+Epilha *criaEPilha(int operacao);
+Pilha *criaPilha();
+
+Registro *procurarPaciente(Lista *lista, char *rg);
 
 // funções de cadastrar
 Data *criaData(int dia, int mes, int ano);
@@ -76,7 +91,14 @@ void consultar(Lista *lista);
 void mostrarLista(Lista *lista);
 void atualizarDados(Lista *lista);
 void removerPaciente(Lista *lista);
+
+// funcoes atendimento
+void enfileirarPaciente(Lista *lista, Fila *fila);
+void desenfileirarpaciente(Lista *lista, Fila *fila);
+void mostrarFila(Fila *fila);
+
 void sobre();
+
 void clearBuffer();
 // guarda de inclusao (garante que conteudo do arquivo é incluido apenas 1x em
 // cada arquivo que o referencia)
