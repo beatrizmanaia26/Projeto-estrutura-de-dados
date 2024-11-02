@@ -58,6 +58,7 @@ typedef struct {
 typedef struct EPilha{
   struct EPilha *anterior;
   int operacao;
+  Registro *dados;
   struct EPilha *prox;
 }Epilha;
 
@@ -69,7 +70,7 @@ typedef struct Pilha{
 // menus
 int menu();
 void subMenuCadastrar(Lista *lista);
-void subMenuAtendimento(Lista *lista, Fila *fila, Pilha *stack);
+void subMenuAtendimento(Lista *lista, Fila *fila, Pilha *stack, Registro *r);
 void subMenuPesquisa(Arvore_busca *arvore, Registro *r);
 
 // funcoes base dos structs
@@ -81,7 +82,7 @@ Efila *criaEfila(Registro *r);
 Fila *criaFila();
 E_arvore_busca *criaE_arv(Registro *r);
 Arvore_busca *criaArvore();
-Epilha *criaEPilha(int operacao);
+Epilha *criaEPilha(int operacao, Registro *r);
 Pilha *criaPilha();
 
 Registro *procurarPaciente(Lista *lista, char *rg);
@@ -95,17 +96,18 @@ void atualizarDados(Lista *lista);
 void removerPaciente(Lista *lista);
 
 // funcoes atendimento
-void enfileirarPaciente(Lista *lista, Fila *fila, Pilha *stack);
-void desenfileirarpaciente(Lista *lista, Fila *fila, Pilha *stack);
-void mostrarFila(Fila *fila, Pilha *stack);
+void enfileirarPaciente(Lista *lista, Fila *fila, Pilha *stack, Registro *r);
+void desenfileirarpaciente(Lista *lista, Fila *fila, Pilha *stack, Registro *r);
+void mostrarFila(Fila *fila);
 
 // funcoes pesquisa
 void in_ordem(E_arvore_busca *raiz);
 Registro *registroOrdenadoAno(Arvore_busca *arvore, Registro *r);
 
 //funcoes de remover
-void push(Pilha *stack, int operacao);
-void DesfazerOperacao(Lista *lista, Fila *fila, Pilha *stack); 
+void push(Pilha *stack, int operacao, Registro *r);
+void enfileirarPacienteAutomatico(Lista *lista, Fila *fila, Registro *r, Pilha *stack); //para nao ter que digitar o rg da pessoa a ser enfileirada
+void DesfazerOperacao(Lista *lista, Fila *fila, Pilha *stack, Registro *r); 
 void mostra(Pilha *stack);
 
 void sobre();

@@ -15,13 +15,13 @@ int main(void) {
       subMenuCadastrar(lista);
     break;
     case 2:
-      subMenuAtendimento(lista, fila, stack);
+      subMenuAtendimento(lista, fila, stack, &r);
     break;
     case 3:
       subMenuPesquisa(arvore, &r);
     break;
     case 4:
-      DesfazerOperacao(lista, fila, stack);
+      DesfazerOperacao(lista, fila, stack, &r);
     break;
     case 7:
       sobre();
