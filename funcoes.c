@@ -391,6 +391,7 @@ void desenfileirarpaciente(Lista *lista, Fila *fila, Pilha *stack, Registro *r) 
   }
 
   Efila *removido = fila->head;
+  Registro *pacienteRemovido = removido->dados; //para que seja possivel enfileirar ele novamente quando clicar em desfazer operação
   fila->head = fila->head->prox;
   if (fila->head == NULL) {
     fila->tail = NULL; // Se a fila ficou vazia
@@ -398,9 +399,9 @@ void desenfileirarpaciente(Lista *lista, Fila *fila, Pilha *stack, Registro *r) 
   fila->qtde--;
 
   // Armazena o paciente removido na pilha para desfazer a operação
-  push(stack, 2, removido->dados); // 2 indica a operação de desfazer desenfileirar
+  push(stack, 2, pacienteRemovido); 
 
-  printf("Paciente %s foi desenfileirado! \n", removido->dados->nome);
+  printf("Paciente %s foi desenfileirado! \n", pacienteRemovido->nome);
   free(removido);
 }
 
@@ -547,7 +548,8 @@ void DesfazerOperacao(Lista *lista, Fila *fila, Pilha *stack, Registro *r) { // 
     printf("Você deseja desfazer a operação de desenfileirar um paciente na fila de atendimento? (S/N): ");
     scanf("%s", resp);
     if (strcmp(resp, "S") == 0 || strcmp(resp, "s") == 0) {
-      enfileirarPacienteAutomatico(lista, fila, r, stack);
+      
+      // enfileirarPacienteAutomatico(lista, fila, r, stack);
       // remove o topo da pilha
       Epilha *temp = stack->topo;
       stack->topo = stack->topo->anterior;
