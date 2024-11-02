@@ -11,6 +11,7 @@ int menu() {
   printf("Digite o número de sua escolha: ");
   scanf("%d", &opcao);
   printf("\n");
+
   return opcao;
 }
 
@@ -38,10 +39,13 @@ void subMenuCadastrar(Lista *lista) {
   case 5:
     removerPaciente(lista);
     break;
+  default:
+    printf("Opção inválida. Tente novamente.\n");
+    break;
   }
 }
 
-void subMenuAtendimento(Lista *lista, Fila *fila) {
+void subMenuAtendimento(Lista *lista, Fila *fila, Pilha *stack) {
   int subOpcao;
   printf("1-Enfileirar paciente\n2-Desenfileirar paciente \n3-Mostrar fila.\n");
   printf("Digite o número de sua escolha: ");
@@ -49,18 +53,21 @@ void subMenuAtendimento(Lista *lista, Fila *fila) {
   printf("\n");
   switch (subOpcao) {
   case 1:
-    enfileirarPaciente(lista, fila);
+    enfileirarPaciente(lista, fila, stack);
     break;
   case 2:
-    desenfileirarpaciente(lista, fila);
+    desenfileirarpaciente(lista, fila, stack);
     break;
   case 3:
-    mostrarFila(fila);
+    mostrarFila(fila, stack);
+    break;
+  default:
+    printf("Opção inválida. Tente novamente.\n");
     break;
   }
 }
 
-void subMenuPesquisa(Lista *lista) {
+void subMenuPesquisa(Arvore_busca *arvore, Registro *r) {
   int subOpcao;
   printf("1-Mostrar registros ordenados por ano de registro.\n2-Mostrar "
          "registros ordenados por mês de registro.\n"
@@ -71,17 +78,20 @@ void subMenuPesquisa(Lista *lista) {
   printf("\n");
   switch (subOpcao) {
   case 1:
-    // registroOrdenadoAno(lista);
+    registroOrdenadoAno(arvore, r);
     break;
-    // case 2:
+  // case 2:
 
-    //   break;
-    // case 3:
+  //   break;
+  // case 3:
 
-    //   break;
-    // case 4:
+  //   break;
+  // case 4:
 
-    //   break;
+  //   break;
+  default:
+    printf("Opção inválida. Tente novamente.\n");
+    break;
   }
 }
 
@@ -145,7 +155,9 @@ void cadastrar(Lista *lista) { // insere ordenadamente
       }
       atual = atual->prox;
     }
-  } while (rgCadastrado);
+  } while (rgCadastrado); // como rgJaCadastrado só recebe 1 ou 0, a forma mais
+                          // comum e clara em C é simplesmente verificar while
+                          // (rgJaCadastrado);
 
   printf("Digite a idade da pessoa: ");
   scanf("%d", &idade);
@@ -330,7 +342,7 @@ Registro *procurarPaciente(Lista *lista, char *rg) {
   if (atual != NULL) {
     return atual->dados;
   } else {
-    registro = NULL;
+    registro = NULL; // nao pega lixo de memoria
     printf("Paciente não cadastrado :(\n");
     printf("\n");
     return registro;
@@ -338,7 +350,10 @@ Registro *procurarPaciente(Lista *lista, char *rg) {
 }
 
 // item 1 do subMenuAtendimento
-void enfileirarPaciente(Lista *lista, Fila *fila) { // precisa da condição pra não add o mesmo paciente
+void enfileirarPaciente(Lista *lista, Fila *fila, Pilha *stack) { // precisa da condição pra não add o mesmo paciente
+  // coloca operacao na pilha
+  push(stack, 1);
+
   char rg[10];
   printf("Digite o RG do paciente: ");
   scanf("%s", rg);
@@ -370,7 +385,9 @@ void enfileirarPaciente(Lista *lista, Fila *fila) { // precisa da condição pra
 }
 
 // item 2 do subMenuAtendimento
-void desenfileirarpaciente(Lista *lista, Fila *fila) {
+void desenfileirarpaciente(Lista *lista, Fila *fila, Pilha *stack) {
+  // coloca operacao na pilha
+  push(stack, 2);
 
   if (fila->qtde > 0) {
     Efila *removido = fila->head; // para poder dar free (desalocar memoria)
@@ -379,10 +396,10 @@ void desenfileirarpaciente(Lista *lista, Fila *fila) {
     if (fila->qtde == 1) { // quando tem apenas 1 elemento
       fila->tail = NULL;
     }
-    printf("%s saiu da fila!\n", removido->dados->nome);
-    printf("\n");
+    // printf("%s saiu da fila!\n", fila->head->dados->nome);
     fila->qtde--;
     free(removido);
+    // printf("%s removido da fila!\n", removido->dados->nome);
   } else {
     printf("Não há pacientes na fila\n");
     printf("\n");
@@ -391,7 +408,10 @@ void desenfileirarpaciente(Lista *lista, Fila *fila) {
 }
 
 // item 3 do subMenuAtendimento
-void mostrarFila(Fila *fila) {
+void mostrarFila(Fila *fila, Pilha *stack) {
+  // coloca operacao na pilha
+  push(stack, 3);
+
   if (fila->head == NULL) {
     printf("A fila de atendimento está vazia\n");
     printf("\n");
@@ -401,11 +421,158 @@ void mostrarFila(Fila *fila) {
   int cont = 1;
   while (atual != NULL) {
     Registro r = *atual->dados;
-    printf("%d-Nome: %s\n", cont,
-           r.nome); // perguntar se vai precisa coloca o resto das informações
+    printf("%d-Nome: %s\n", cont,r.nome); 
+    printf("%d-RG: %s\n", cont,r.rg); 
+    printf("%d-Idade: %d\n", cont,r.idade); 
+    printf("Data de cadastro: %d/%d/%d\n", r.entrada->dia, r.entrada->mes, r.entrada->ano); 
     atual = atual->prox;
     cont++;
     printf("\n");
+  }
+}
+
+// para a arvore
+E_arvore_busca *criaE_arv(Registro *r){
+  E_arvore_busca *novo = malloc(sizeof(E_arvore_busca));
+  novo->esq = NULL;
+  novo->dir = NULL;
+  novo->pai = NULL;
+  novo->dados = r;
+  return novo;
+}
+
+Arvore_busca *criaArvore(){
+  Arvore_busca *arvore = malloc(sizeof(Arvore_busca));
+  arvore->raiz = NULL;
+  arvore->qtde = 0;
+  return arvore;
+}
+
+void in_ordem(E_arvore_busca *raiz){ //mostra ano em ordem crescente
+  if(raiz != NULL){
+    in_ordem(raiz->esq);
+    printf("%d", raiz->dados->entrada->ano);
+    in_ordem(raiz->dir);
+  }
+}
+
+Registro *registroOrdenadoAno(Arvore_busca *arvore, Registro *r) { //(Lista *lista, Registro *r
+  E_arvore_busca *novo = malloc(sizeof(E_arvore_busca));
+  if(arvore->raiz == NULL){//arvore vazia
+    arvore->raiz = novo;
+  }else{//arvore não vazia
+    E_arvore_busca *anterior = NULL;
+    E_arvore_busca *atual = arvore->raiz;
+    while(atual != NULL){//itera(caminha)
+      anterior = atual;
+        //arruma ponteiros para inserção
+      if(r->entrada->ano < atual->dados->entrada->ano){
+           atual = atual->esq;
+      }
+      else if (r->entrada->ano > atual->dados->entrada->ano){
+        atual = atual->dir;
+      }
+    }
+    //insere
+    novo->pai = anterior; //faz pai do novo ser o anterior 
+    if(r->entrada->ano > atual->dados->entrada->ano){//valor a ser inserido > valor do pai
+      anterior->dir = novo;
+      novo->dados->entrada->ano = r->entrada->ano; 
+    }else{
+      anterior->esq = novo;
+      novo->dados->entrada->ano = r->entrada->ano; 
+    }
+    arvore->qtde++;
+  }
+  // return in_ordem(arvore);
+}
+
+// para a pilha (desfazer operacao)
+Epilha *criaEPilha(int operacao) {
+  Epilha *celula = malloc(sizeof(Epilha));
+  celula->anterior = NULL;
+  celula->prox = NULL;
+  celula->operacao = operacao;
+  return celula;
+}
+
+Pilha *criaPilha() {
+  Pilha *stack = malloc(sizeof(Pilha));
+  stack->qtde = 0;
+  stack->topo = NULL;
+  return stack;
+}
+
+// empilhar operações da fila de atendimento
+void push(Pilha *stack,int operacao) { // endereço da pilha e valor a ser empilhado
+  // otimizado
+  Epilha *novo = criaEPilha(operacao);
+  if (stack->qtde > 0) {
+    novo->anterior = stack->topo;
+    stack->topo->prox = novo;
+  }
+  stack->topo = novo;
+  stack->qtde++;
+}
+
+void DesfazerOperacao(Lista *lista, Fila *fila, Pilha *stack) { // desempilhar (pop) operações
+  // se pilha é vazia
+  if (stack->qtde == 0) {
+    printf("Não há operações para desfazer\n");
+    return;
+  }
+
+  // validar desfazer operação do topo da pilha
+  int op = stack->topo->operacao;
+  char resp[10];
+
+  // desfazer "enfileirar paciente"
+  if (op == 1) {
+    printf("Você deseja desfazer a operação de inserir o paciente XXXXX da fila de atendimento? (S/N)\n");
+    scanf("%s", resp);
+    if (strcmp(resp, "S") == 0 ||strcmp(resp, "s") == 0) { // VERIFICAR SE TA DESENFILEIRANDO A PESSOA CERTA, (SE TEM QUE
+                 // PEGAR PELO RG...)!!!!!!!!!!!!!!!!!!!
+      desenfileirarpaciente(lista, fila, stack);
+      // remove o topo da pilha
+      Epilha *temp = stack->topo;
+      stack->topo = stack->topo->anterior;
+      if (stack->qtde > 1) { // novo topo não aponte para o nó que foi removido
+        stack->topo->prox = NULL;
+      }
+      free(temp);
+      stack->qtde--;
+      printf("Operação desfeita com sucesso!\n");
+      mostra(stack);
+    } else {
+      printf("Cancelamento de operação cancelado\n");
+    }
+  }
+
+  // desfazer "desenfileirar paciente"
+  if (op == 2) {
+    printf("Você deseja desfazer a operação de desenfileirar um paciente na "
+           "fila de atendimento? (S/N)\n");
+    scanf("%s", resp);
+    if (strcmp(resp, "S") == 0 || strcmp(resp, "s") == 0) {
+      enfileirarPaciente(lista, fila, stack);
+      // remove o topo da pilha
+      Epilha *temp = stack->topo;
+      stack->topo = stack->topo->anterior;
+      if (stack->qtde > 1) { // novo topo não aponte para o nó que foi removido
+        stack->topo->prox = NULL;
+      }
+      free(temp);
+      stack->qtde--;
+    }
+  }
+}
+
+void mostra(Pilha *stack) {
+  Epilha *atual = stack->topo;
+  while (atual != NULL) {
+    printf("%d ->", atual->operacao);
+    // pra imprimir anterior
+    atual = atual->anterior;
   }
 }
 

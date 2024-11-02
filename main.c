@@ -5,6 +5,8 @@ int main(void) {
   int opcao;
   Lista *lista = criaLista();
   Fila *fila = criaFila();
+  Pilha *stack = criaPilha();
+  Arvore_busca *arvore = criaArvore();
   Registro r;
   do {
     opcao = menu();
@@ -13,13 +15,20 @@ int main(void) {
       subMenuCadastrar(lista);
     break;
     case 2:
-      subMenuAtendimento(lista, fila);
+      subMenuAtendimento(lista, fila, stack);
+    break;
+    case 3:
+      subMenuPesquisa(arvore, &r);
+    break;
+    case 4:
+      DesfazerOperacao(lista, fila, stack);
     break;
     case 7:
       sobre();
     break;
     default:
       printf("Opção inválida. Tente novamente.\n");
+      break;
     }
   } while (opcao != 0);
   return 0;

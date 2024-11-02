@@ -46,6 +46,7 @@ typedef struct E_arvore_busca {
   Registro *dados;
   struct E_arvore_busca *esq;
   struct E_arvore_busca *dir;
+  struct E_arvore_busca *pai;
 } E_arvore_busca;
 
 typedef struct {
@@ -53,6 +54,7 @@ typedef struct {
   int qtde;
 } Arvore_busca;
 
+//para o item "desfazer operacao"
 typedef struct EPilha{
   struct EPilha *anterior;
   int operacao;
@@ -67,8 +69,8 @@ typedef struct Pilha{
 // menus
 int menu();
 void subMenuCadastrar(Lista *lista);
-void subMenuAtendimento(Lista *lista, Fila *fila);
-// void subMenuPesquisa(Lista *lista);
+void subMenuAtendimento(Lista *lista, Fila *fila, Pilha *stack);
+void subMenuPesquisa(Arvore_busca *arvore, Registro *r);
 
 // funcoes base dos structs
 Registro *salvarPessoa(char *nome, int idade, char *rg, Data *data);
@@ -77,7 +79,7 @@ Elista *criaElista(Registro *r);
 Lista *criaLista();
 Efila *criaEfila(Registro *r);
 Fila *criaFila();
-E_arvore_busca *criaE_arv(int valor);
+E_arvore_busca *criaE_arv(Registro *r);
 Arvore_busca *criaArvore();
 Epilha *criaEPilha(int operacao);
 Pilha *criaPilha();
@@ -93,9 +95,18 @@ void atualizarDados(Lista *lista);
 void removerPaciente(Lista *lista);
 
 // funcoes atendimento
-void enfileirarPaciente(Lista *lista, Fila *fila);
-void desenfileirarpaciente(Lista *lista, Fila *fila);
-void mostrarFila(Fila *fila);
+void enfileirarPaciente(Lista *lista, Fila *fila, Pilha *stack);
+void desenfileirarpaciente(Lista *lista, Fila *fila, Pilha *stack);
+void mostrarFila(Fila *fila, Pilha *stack);
+
+// funcoes pesquisa
+void in_ordem(E_arvore_busca *raiz);
+Registro *registroOrdenadoAno(Arvore_busca *arvore, Registro *r);
+
+//funcoes de remover
+void push(Pilha *stack, int operacao);
+void DesfazerOperacao(Lista *lista, Fila *fila, Pilha *stack); 
+void mostra(Pilha *stack);
 
 void sobre();
 
