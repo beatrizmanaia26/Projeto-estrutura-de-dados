@@ -21,7 +21,7 @@ int main(void) {
       subMenuPesquisa(arvore, &r);
     break;
     case 4:
-      DesfazerOperacao(lista, fila, stack, &r);
+      DesfazerOperacao(lista, fila, stack);
     break;
     case 7:
       sobre();

@@ -133,6 +133,7 @@ void cadastrar(Lista *lista) { // insere ordenadamente
   char nome[50];
   char rg[10];
   int idade = 0;
+
   printf("Digite o nome da pessoa: ");
   scanf("%s", nome);
   clearBuffer();
@@ -141,9 +142,21 @@ void cadastrar(Lista *lista) { // insere ordenadamente
   int rgCadastrado;
   do {
     rgCadastrado = 0;
+    int rgValido = 0;
     printf("Digite o RG da pessoa: ");
-    scanf("%s", rg); // RG deve ter 9 dígitos, ser entre '.' e '-'
-    clearBuffer();
+      scanf("%s", rg); // RG deve ter 9 dígitos, ser entre '.' e '-'
+      clearBuffer();
+  //  do{
+  //   printf("Digite o RG da pessoa: ");
+  //   scanf("%s", rg); // RG deve ter 9 dígitos, ser entre '.' e '-'
+  //   clearBuffer();
+  //   // Verifica se o RG tem exatamente 9 caracteres
+  //     if (strlen(rg) == 9) {
+  //       rgValido = 1; // RG válido
+  //     } else {
+  //       printf("RG inválido! O RG deve ter exatamente 9 dígitos. Tente novamente.\n");
+  //     }
+  //   } while (!rgValido);
 
     // Verifica se o RG já está cadastrado
     Elista *atual = lista->inicio;
@@ -173,6 +186,9 @@ void cadastrar(Lista *lista) { // insere ordenadamente
   novo->prox = lista->inicio;
   lista->inicio = novo;
   lista->qtde++;
+
+  //adiciona paciente na arvore 
+
   printf("\n");
   printf("Paciente cadastrado com sucesso!\n");
   printf("\n");
@@ -333,8 +349,7 @@ Registro *procurarPaciente(Lista *lista, char *rg) {
   Registro *registro = malloc(sizeof(Registro));
   Elista *atual = lista->inicio;
   Elista *anterior = NULL;
-  while (atual != NULL && strcmp(atual->dados->rg, rg) !=
-                              0) { // while que percorre a lista ate achar o rg
+  while (atual != NULL && strcmp(atual->dados->rg, rg) != 0) { // while que percorre a lista ate achar o rg
     anterior = atual;
     atual = atual->prox;
   }
@@ -350,9 +365,6 @@ Registro *procurarPaciente(Lista *lista, char *rg) {
 
 // item 1 do subMenuAtendimento
 void enfileirarPaciente(Lista *lista, Fila *fila, Pilha *stack, Registro *r) { // precisa da condição pra não add o mesmo paciente
-  // coloca operacao na pilha
-  push(stack, 1, r);
-
   char rg[10];
   printf("Digite o RG do paciente: ");
   scanf("%s", rg);
@@ -360,7 +372,7 @@ void enfileirarPaciente(Lista *lista, Fila *fila, Pilha *stack, Registro *r) { /
   Registro *paciente = procurarPaciente(lista, rg);
   if (paciente == NULL) {
     return;
-  } else { // Verifica se o paciente já está na fila
+  } // Verifica se o paciente já está na fila
     Efila *atual = fila->head;
     while (atual != NULL && atual->dados != paciente) {
       atual = atual->prox;
@@ -370,7 +382,7 @@ void enfileirarPaciente(Lista *lista, Fila *fila, Pilha *stack, Registro *r) { /
       printf("\n");
       return;
     }
-  }
+  //adiciona paciente na fila
   Efila *nova = criaEfila(paciente);
   if (fila->qtde == 0) { // fila vazia
     fila->head = nova;
@@ -379,17 +391,19 @@ void enfileirarPaciente(Lista *lista, Fila *fila, Pilha *stack, Registro *r) { /
   }
   fila->tail = nova;
   fila->qtde++;
-  printf("%s entrou na fila!\n", paciente->nome);
+  printf("Paciente %s entrou na fila!\n", paciente->nome);
   printf("\n");
+  // coloca operacao na pilha
+  push(stack, 1, paciente);
+  // printf("paciente %s adicionado na PILHA \n", paciente->nome);
 }
 
 // item 2 do subMenuAtendimento
-void desenfileirarpaciente(Lista *lista, Fila *fila, Pilha *stack, Registro *r) {
+Registro *desenfileirarpaciente(Lista *lista, Fila *fila, Pilha *stack, Registro *r) { //retorna registro o paciente removido para usar esse registro para enfileirar o paciente quando clico em desfazeroperacao de desenfileirar o paciente
   if (fila->head == NULL) {
     printf("Fila vazia, nenhum paciente para desenfileirar.\n");
-    return;
+    return NULL;
   }
-
   Efila *removido = fila->head;
   Registro *pacienteRemovido = removido->dados; //para que seja possivel enfileirar ele novamente quando clicar em desfazer operação
   fila->head = fila->head->prox;
@@ -397,12 +411,12 @@ void desenfileirarpaciente(Lista *lista, Fila *fila, Pilha *stack, Registro *r) 
     fila->tail = NULL; // Se a fila ficou vazia
   }
   fila->qtde--;
-
+  printf("Paciente %s saiu da fila!\n\n", pacienteRemovido->nome);
   // Armazena o paciente removido na pilha para desfazer a operação
   push(stack, 2, pacienteRemovido); 
-
-  printf("Paciente %s foi desenfileirado! \n", pacienteRemovido->nome);
+  // printf("Paciente %s adicionado na PILHA!\n\n", pacienteRemovido->nome);
   free(removido);
+  return pacienteRemovido;
 }
 
 // item 3 do subMenuAtendimento
@@ -484,6 +498,10 @@ Registro *registroOrdenadoAno(Arvore_busca *arvore, Registro *r) { //(Lista *lis
 // para a pilha (desfazer operacao)
 Epilha *criaEPilha(int operacao, Registro *r) {
   Epilha *celula = malloc(sizeof(Epilha));
+  if(celula == NULL){
+    printf("Erro ao alocar memória\n");
+    return NULL;
+  }
   celula->anterior = NULL;
   celula->prox = NULL;
   celula->operacao = operacao;
@@ -512,44 +530,63 @@ void push(Pilha *stack,int operacao, Registro *r) { // endereço da pilha e valo
   stack->qtde++;
 }
 
-void DesfazerOperacao(Lista *lista, Fila *fila, Pilha *stack, Registro *r) { // desempilhar (pop) operações
+void DesfazerOperacao(Lista *lista, Fila *fila, Pilha *stack) { // desempilhar (pop) operações
   // se pilha é vazia
   if (stack->qtde == 0) {
     printf("Não há operações para desfazer\n");
     return;
   }
-
   // validar desfazer operação do topo da pilha
   int op = stack->topo->operacao;
   char resp[10];
 
   // desfazer "enfileirar paciente"
   if (op == 1) {
-    printf("Você deseja desfazer a operação de inserir o paciente XXXXX da fila de atendimento? (S/N): ");
+    Registro *paciente = stack->topo->dados;
+    printf("Você deseja desfazer a operação de inserir o paciente %s na fila de atendimento? (S/N): ", paciente->nome);
     scanf("%s", resp);
-    if (strcmp(resp, "S") == 0 ||strcmp(resp, "s") == 0) { // VERIFICAR SE TA DESENFILEIRANDO A PESSOA CERTA, (SE TEM QUE PEGAR PELO RG...)!!!!!!!!!!!!!!!!!!!
-      desenfileirarpaciente(lista, fila, stack, r);
-      // remove o topo da pilha
-      Epilha *temp = stack->topo;
-      stack->topo = stack->topo->anterior;
-      if (stack->qtde > 1) { // novo topo não aponte para o nó que foi removido
-        stack->topo->prox = NULL;
-      }
-      free(temp);
-      stack->qtde--;
-      mostra(stack);
-    } else {
-      printf("Cancelamento de operação cancelado\n");
-    }
-  }
+    if (strcmp(resp, "S") == 0 ||strcmp(resp, "s") == 0) { 
+      // remover paciente da fila
+      if (fila->head == NULL) {
+          printf("A fila já está vazia, não há operações para desfazer.\n");
+          return;
+        }
+        // Remove o último elemento da fila (tail)
+        Efila *atual = fila->head;
+        if (atual == fila->tail) { // apenas um elemento na fila
+          free(fila->tail);
+          fila->head = fila->tail = NULL;
+        } else {
+          // Percorre até o penúltimo elemento
+          while (atual->prox != fila->tail) {
+            atual = atual->prox;
+          }
+          free(fila->tail);
+          fila->tail = atual;
+          fila->tail->prox = NULL;
+        }
+        fila->qtde--;
+        printf("O paciente %s foi removido da fila.\n", paciente->nome);
 
+        // Remove o topo da pilha
+        Epilha *temp = stack->topo;
+        stack->topo = stack->topo->anterior;
+        if (stack->qtde > 1) { // para que o novo topo não aponte para o nó que foi removido
+          stack->topo->prox = NULL;
+        }
+        free(temp);
+        stack->qtde--;
+      } else {
+        printf("Cancelamento de operação cancelado\n");
+      }
+    }
   // desfazer "desenfileirar paciente"
   if (op == 2) {
-    printf("Você deseja desfazer a operação de desenfileirar um paciente na fila de atendimento? (S/N): ");
+    Registro *pacienteRemovido = stack->topo->dados;
+    printf("Você deseja desfazer a operação de desenfileirar o paciente %s na fila de atendimento? (S/N): ", pacienteRemovido->nome);
     scanf("%s", resp);
     if (strcmp(resp, "S") == 0 || strcmp(resp, "s") == 0) {
-      
-      // enfileirarPacienteAutomatico(lista, fila, r, stack);
+      enfileirarPacienteAutomatico(lista, fila, pacienteRemovido, stack);
       // remove o topo da pilha
       Epilha *temp = stack->topo;
       stack->topo = stack->topo->anterior;
@@ -562,8 +599,8 @@ void DesfazerOperacao(Lista *lista, Fila *fila, Pilha *stack, Registro *r) { // 
   }
 }
 
-void enfileirarPacienteAutomatico(Lista *lista, Fila *fila, Registro *r, Pilha *stack){
-  char *rg = r->rg;
+void enfileirarPacienteAutomatico(Lista *lista, Fila *fila, Registro *pacienteRemovido, Pilha *stack){
+  char *rg = pacienteRemovido->rg;
   Registro *paciente = procurarPaciente(lista, rg);
   if (paciente == NULL) {
     return;
@@ -581,20 +618,13 @@ void enfileirarPacienteAutomatico(Lista *lista, Fila *fila, Registro *r, Pilha *
   Efila *nova = criaEfila(paciente);
   if (fila->qtde == 0) { // fila vazia
     fila->head = nova;
+    fila->tail = nova;
   } else {
-    fila->tail->prox = nova;
+    nova->prox = fila->head;
+    fila->head = nova;
   }
   fila->tail = nova;
   fila->qtde++;
-}
-
-void mostra(Pilha *stack) {
-  Epilha *atual = stack->topo;
-  while (atual != NULL) {
-    printf("%d ->", atual->operacao);
-    // pra imprimir anterior
-    atual = atual->anterior;
-  }
 }
 
 // sobre

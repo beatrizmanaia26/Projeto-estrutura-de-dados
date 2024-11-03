@@ -97,7 +97,7 @@ void removerPaciente(Lista *lista);
 
 // funcoes atendimento
 void enfileirarPaciente(Lista *lista, Fila *fila, Pilha *stack, Registro *r);
-void desenfileirarpaciente(Lista *lista, Fila *fila, Pilha *stack, Registro *r);
+Registro *desenfileirarpaciente(Lista *lista, Fila *fila, Pilha *stack, Registro *r);
 void mostrarFila(Fila *fila);
 
 // funcoes pesquisa
@@ -107,8 +107,7 @@ Registro *registroOrdenadoAno(Arvore_busca *arvore, Registro *r);
 //funcoes de remover
 void push(Pilha *stack, int operacao, Registro *r);
 void enfileirarPacienteAutomatico(Lista *lista, Fila *fila, Registro *r, Pilha *stack); //para nao ter que digitar o rg da pessoa a ser enfileirada
-void DesfazerOperacao(Lista *lista, Fila *fila, Pilha *stack, Registro *r); 
-void mostra(Pilha *stack);
+void DesfazerOperacao(Lista *lista, Fila *fila, Pilha *stack); 
 
 void sobre();
 
