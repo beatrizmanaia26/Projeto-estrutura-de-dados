@@ -69,7 +69,7 @@ typedef struct Pilha{
 
 // menus
 int menu();
-void subMenuCadastrar(Lista *lista);
+void subMenuCadastrar(Lista *lista, Arvore_busca *arvore);
 void subMenuAtendimento(Lista *lista, Fila *fila, Pilha *stack, Registro *r);
 void subMenuPesquisa(Arvore_busca *arvore, Registro *r);
 
@@ -89,7 +89,7 @@ Registro *procurarPaciente(Lista *lista, char *rg);
 
 // funções de cadastrar
 Data *criaData(int dia, int mes, int ano);
-void cadastrar(Lista *lista);
+void cadastrar(Lista *lista, Arvore_busca *arvore);
 void consultar(Lista *lista);
 void mostrarLista(Lista *lista);
 void atualizarDados(Lista *lista);
@@ -103,12 +103,15 @@ void mostrarFila(Fila *fila);
 // funcoes pesquisa
 void in_ordem(E_arvore_busca *raiz);
 Registro *registroOrdenadoAno(Arvore_busca *arvore, Registro *r);
+Registro *registroOrdenadoMes(Arvore_busca *arvore, Registro *r);
 
 //funcoes de remover
 void push(Pilha *stack, int operacao, Registro *r);
 void enfileirarPacienteAutomatico(Lista *lista, Fila *fila, Registro *r, Pilha *stack); //para nao ter que digitar o rg da pessoa a ser enfileirada
 void DesfazerOperacao(Lista *lista, Fila *fila, Pilha *stack); 
 
+void salvaArquivo(Lista *lista, char *nomeArquivo);
+void lerArquivo(Lista *lista, char *nomeArquivo, Arvore_busca *arvore);
 void sobre();
 
 void clearBuffer();

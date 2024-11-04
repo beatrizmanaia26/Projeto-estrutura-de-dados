@@ -15,7 +15,7 @@ int menu() {
   return opcao;
 }
 
-void subMenuCadastrar(Lista *lista) {
+void subMenuCadastrar(Lista *lista, Arvore_busca *arvore) {
   int subOpcao;
   printf(
       "1-Cadastrar novo paciente\n2-Consultar paciente cadastrado \n3-Mostrar "
@@ -25,7 +25,7 @@ void subMenuCadastrar(Lista *lista) {
   printf("\n");
   switch (subOpcao) {
   case 1:
-    cadastrar(lista);
+    cadastrar(lista,arvore);
     break;
   case 2:
     consultar(lista);
@@ -78,8 +78,8 @@ void subMenuPesquisa(Arvore_busca *arvore, Registro *r) {
   printf("\n");
   switch (subOpcao) {
   case 1:
-    // registroOrdenadoAno(arvore, r);
-    in_ordem(arvore->raiz); //in_ordem comeca percorrendo o no raiz da arvore
+    registroOrdenadoAno(arvore, r);
+    //in_ordem(arvore->raiz); //in_ordem comeca percorrendo o no raiz da arvore
     break;
   // case 2:
 
@@ -95,6 +95,7 @@ void subMenuPesquisa(Arvore_busca *arvore, Registro *r) {
     break;
   }
 }
+
 
 // informacoes para cadastrar pessoa
 Registro *salvarPessoa(char *nome, int idade, char *rg, Data *data) {
@@ -129,7 +130,7 @@ Data *criaData(int dia, int mes, int ano) {
 }
 
 // item 1 submenu cadastrar
-void cadastrar(Lista *lista) { // insere ordenadamente
+void cadastrar(Lista *lista, Arvore_busca *arvore) { // insere ordenadamente
   char nome[50];
   char rg[10];
   int idade = 0;
@@ -627,7 +628,57 @@ void enfileirarPacienteAutomatico(Lista *lista, Fila *fila, Registro *pacienteRe
   fila->qtde++;
 }
 
-// sobre
+void salvaArquivo(Lista *lista, char *nomeArquivo){
+  FILE *arquivo = fopen(nomeArquivo, "wb");
+  if (arquivo == NULL) { // vê se valor do ponteiro ta apontando pra NULL
+    printf("Falha ao abrir o arquivo");
+    return;
+  }
+  Elista *atual = lista->inicio;
+  while (atual != NULL) {
+    fwrite(atual->dados, sizeof(Registro), 1, arquivo); 
+    fwrite(atual->dados->entrada, sizeof(Data), 1, arquivo); 
+    atual = atual->prox;
+  } //Guarda um elemento por vez
+  fclose(arquivo);
+  printf("Dados salvos com sucesso!\n");
+  printf("\n");
+}
+
+void lerArquivo(Lista *lista, char *nomeArquivo, Arvore_busca *arvore){
+  FILE *arquivo = fopen(nomeArquivo, "rb");
+  if (arquivo == NULL) {
+    printf("Falha ao abrir o arquivo");
+    return;
+  }
+  Registro registro;
+  Data data;
+  while (fread(&registro, sizeof(Registro), 1, arquivo) == 1) { 
+      fread(&data, sizeof(Data), 1, arquivo); 
+      Data *novaData = criaData(data.dia, data.mes, data.ano);
+      Registro *pessoa = salvarPessoa(registro.nome, registro.idade, registro.rg, novaData);
+      if (pessoa != NULL) {
+         Elista *novo = criaElista(pessoa);
+         //Adicionar no final da lista
+         if (lista->inicio == NULL) {
+           lista->inicio = novo;
+         }else{
+           Elista *atual = lista->inicio;
+            Elista *anterior = NULL;
+            while (atual != NULL) {
+              anterior = atual;
+              atual = atual->prox;
+            }
+            anterior->prox = novo;
+         }
+        lista->qtde++;
+      }
+  }
+  fclose(arquivo);
+  printf("Dados carregados com sucesso!\n");
+  printf("\n");
+}
+
 void sobre() {
   printf(
       "Nome das desenvolvedoras: Beatriz Manaia Lourenço Berto e Luana Bortko "
@@ -641,28 +692,3 @@ void clearBuffer() {
   while ((c = getchar()) != '\n' && c != EOF)
     ;
 }
-
-/*
-int salva_clientes(listaClientes Lc, char nomeArquivo[]) {
-  FILE *f = fopen(nomeArquivo, "wb");
-  if (f == NULL) { // vê se valor do ponteiro ta apontando pra NULL
-    printf("Falha ao abrir o arquivo");
-    return 1;
-  }
-  fwrite(&Lc, sizeof(listaClientes), 1, f);
-  fclose(f);
-  return 0;
-}
-
-int ler(listaClientes *Lc, char nomeArquivo[]) {
-  FILE *f = fopen(nomeArquivo, "rb");
-  if (f == NULL) {
-    printf("Falha ao abrir o arquivo");
-    return 1;
-  }
-  fread(Lc, sizeof(listaClientes), 1,
-        f); // 1 pq é 1 struct (se fosse o tarefa seria 100 em quantidade)
-  fclose(f);
-  return 0;
-}
-*/
