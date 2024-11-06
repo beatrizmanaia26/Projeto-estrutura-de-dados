@@ -7,25 +7,28 @@ int main(void) {
   Lista *lista = criaLista();
   Fila *fila = criaFila();
   Pilha *stack = criaPilha();
-  Arvore_busca *arvore = criaArvore();
+  Arvore_busca *arvoreAno = criaArvore();
+  Arvore_busca *arvoreMes = criaArvore();
+  Arvore_busca *arvoreDia = criaArvore();
+  Arvore_busca *arvoreIdade = criaArvore();
   Registro r;
   do {
     opcao = menu();
     switch (opcao) {
     case 1:
-      subMenuCadastrar(lista, arvore);
+      subMenuCadastrar(lista, arvoreAno, arvoreMes, arvoreDia, arvoreIdade);
     break;
     case 2:
       subMenuAtendimento(lista, fila, stack, &r);
     break;
     case 3:
-      subMenuPesquisa(arvore, &r);
+      subMenuPesquisa(arvoreAno, arvoreMes, arvoreDia, arvoreIdade, &r);
     break;
     case 4:
       DesfazerOperacao(lista, fila, stack);
     break;
     case 5:
-      lerArquivo(lista, arquivo,arvore);
+      lerArquivo(lista, arquivo,arvoreAno, arvoreMes, arvoreDia, arvoreIdade);
     break;
     case 6:
       salvaArquivo(lista, arquivo);
