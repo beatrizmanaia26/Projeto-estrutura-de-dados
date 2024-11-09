@@ -1,3 +1,4 @@
+
 #include "funcoes.h"
 #include <stdio.h>
 #include <stdlib.h> //para malloc
@@ -37,7 +38,7 @@ void subMenuCadastrar(Lista *lista, Arvore_busca *arvoreAno, Arvore_busca *arvor
     atualizarDados(lista);
     break;
   case 5:
-    removerPaciente(lista);
+    removerPaciente(lista, arvoreAno, arvoreMes, arvoreDia, arvoreIdade);
     break;
   default:
     printf("Opção inválida. Tente novamente.\n");
@@ -145,17 +146,17 @@ void cadastrar(Lista *lista, Arvore_busca *arvoreAno, Arvore_busca *arvoreMes, A
     printf("Digite o RG da pessoa: ");
       scanf("%s", rg); // RG deve ter 9 dígitos, ser entre '.' e '-'
       clearBuffer();
-  //  do{
-  //   printf("Digite o RG da pessoa: ");
-  //   scanf("%s", rg); // RG deve ter 9 dígitos, ser entre '.' e '-'
-  //   clearBuffer();
-  //   // Verifica se o RG tem exatamente 9 caracteres
-  //     if (strlen(rg) == 9) {
-  //       rgValido = 1; // RG válido
-  //     } else {
-  //       printf("RG inválido! O RG deve ter exatamente 9 dígitos. Tente novamente.\n");
-  //     }
-  //   } while (!rgValido);
+   // do{
+   //  printf("Digite o RG da pessoa: ");
+   //  scanf("%s", rg); // RG deve ter 9 dígitos, ser entre '.' e '-'
+   //  clearBuffer();
+   //  // Verifica se o RG tem exatamente 9 caracteres
+   //    if (strlen(rg) == 9) {
+   //      rgValido = 1; // RG válido
+   //    } else {
+   //      printf("RG inválido! O RG deve ter exatamente 9 dígitos. Tente novamente.\n");
+   //    }
+   //  } while (!rgValido);
 
     // Verifica se o RG já está cadastrado
     Elista *atual = lista->inicio;
@@ -174,21 +175,21 @@ void cadastrar(Lista *lista, Arvore_busca *arvoreAno, Arvore_busca *arvoreMes, A
   scanf("%d", &idade);
 
   // Salvar data de entrada
-  int dia;
-  int mes;
-  int ano;
-  printf("Digite a data de entrada do paciente\n");
-  printf("dia: ");
-  scanf("%d", &dia);
-  printf("mes: ");
-  scanf("%d", &mes);
-  printf("ano: ");
-  scanf("%d", &ano);
-  // time_t t = time(NULL);              // tempo atual
-  // struct tm *tm_info = localtime(&t); // Converter para estrutura tm
-  // int dia = tm_info->tm_mday;
-  // int mes = tm_info->tm_mon + 1;
-  // int ano = tm_info->tm_year + 1900;
+  // int dia;
+  // int mes;
+  // int ano;
+  // printf("Digite a data de entrada do paciente\n");
+  // printf("dia: ");
+  // scanf("%d", &dia);
+  // printf("mes: ");
+  // scanf("%d", &mes);
+  // printf("ano: ");
+  // scanf("%d", &ano);
+  time_t t = time(NULL);              // tempo atual
+  struct tm *tm_info = localtime(&t); // Converter para estrutura tm
+  int dia = tm_info->tm_mday;
+  int mes = tm_info->tm_mon + 1;
+  int ano = tm_info->tm_year + 1900;
   Data *data = criaData(dia, mes, ano);
   Registro *pessoa = salvarPessoa(nome, idade, rg, data);
   Elista *novo = criaElista(pessoa);
@@ -201,7 +202,7 @@ void cadastrar(Lista *lista, Arvore_busca *arvoreAno, Arvore_busca *arvoreMes, A
   registroOrdenadoMes(arvoreMes, pessoa);
   registroOrdenadoDia(arvoreDia, pessoa);
   registroOrdenadoIdade(arvoreIdade, pessoa);
-  
+
   printf("\n");
   printf("Paciente cadastrado com sucesso!\n");
   printf("\n");
@@ -316,7 +317,7 @@ void atualizarDados(Lista *lista) {
 }
 
 // item 5 submenu cadastrar
-void removerPaciente(Lista *lista) {
+void removerPaciente(Lista *lista, Arvore_busca *arvoreAno, Arvore_busca *arvoreMes, Arvore_busca *arvoreDia, Arvore_busca *arvoreIdade) {
   char rg[10];
   printf("Digite o RG da pessoa a ser removida: ");
   scanf("%s", rg);
@@ -338,6 +339,19 @@ void removerPaciente(Lista *lista) {
       anterior->prox = atual->prox;
       lista->qtde--;
     }
+    E_arvore_busca *verticeRemoverAno = buscar_valorAno(arvoreAno, atual->dados);
+    E_arvore_busca *verticeRemoverMes = buscar_valorMes(arvoreMes, atual->dados);
+    E_arvore_busca *verticeRemoverDia = buscar_valorDia(arvoreDia, atual->dados);
+    E_arvore_busca *verticeRemoverIdade = buscar_valorIdade(arvoreIdade, atual->dados);
+    //Testes
+    // if(verticeRemover == NULL){
+    //   printf("Erro ao remover\n");
+    //   return;
+    // }
+    apaga_arvoreAno(arvoreAno, verticeRemoverAno);
+    apaga_arvoreMes(arvoreMes, verticeRemoverMes);
+    apaga_arvoreDia(arvoreDia, verticeRemoverDia);
+    apaga_arvoreIdade(arvoreIdade, verticeRemoverIdade);
     printf("Paciente removido com sucesso\n");
   }
 }
@@ -513,7 +527,6 @@ void *registroOrdenadoAno(Arvore_busca *arvore, Registro *r) { //(void *)retorna
   arvore->qtde++;
   return novo;
 }
-
 void *registroOrdenadoMes(Arvore_busca *arvore, Registro *r){
   E_arvore_busca *novo = criaE_arv(r);
   if (arvore->raiz == NULL) {
@@ -543,7 +556,6 @@ void *registroOrdenadoMes(Arvore_busca *arvore, Registro *r){
   arvore->qtde++;
   return novo;
 }
-
 void *registroOrdenadoDia(Arvore_busca *arvore, Registro *r){
   E_arvore_busca *novo = criaE_arv(r);
   if (arvore->raiz == NULL) {
@@ -573,7 +585,6 @@ void *registroOrdenadoDia(Arvore_busca *arvore, Registro *r){
   arvore->qtde++;
   return novo;
 }
-
 void *registroOrdenadoIdade(Arvore_busca *arvore, Registro *r){
   E_arvore_busca *novo = criaE_arv(r);
   if (arvore->raiz == NULL) {
@@ -604,6 +615,359 @@ void *registroOrdenadoIdade(Arvore_busca *arvore, Registro *r){
   return novo;
 }
 
+void apaga_arvoreAno(Arvore_busca *arvore, E_arvore_busca *vertice) {
+    if (arvore == NULL || vertice == NULL) return;
+    Registro *remove = vertice->dados;
+    E_arvore_busca *atual = arvore->raiz;
+    E_arvore_busca *pai = NULL;
+    // Busca o nó a ser removido considerando rg
+    while (atual != NULL && (strcmp(vertice->dados->rg, atual->dados->rg) != 0)) {
+        pai = atual;
+        if (vertice->dados->entrada->ano < atual->dados->entrada->ano) {
+            atual = atual->esq;
+        } else {
+            atual = atual->dir;
+        }
+    }
+    if (atual == NULL) { // Não encontrou 
+        return;
+    }
+    // Caso 1: Nó sem filhos
+    if (vertice->esq == NULL && vertice->dir == NULL) {
+        if (vertice == arvore->raiz) {
+            arvore->raiz = NULL;
+        } else {
+            if (pai->esq == vertice) {
+                pai->esq = NULL;
+            } else {
+                pai->dir = NULL;
+            }
+        }
+        free(vertice);
+        arvore->qtde--;
+        return;
+    }
+    // Caso 2: Nó com dois filhos
+    if (vertice->esq != NULL && vertice->dir != NULL) {
+        E_arvore_busca *atual2 = vertice->esq;
+        E_arvore_busca *pai2 = vertice;
+        while (atual2->dir != NULL) {
+            pai2 = atual2;
+            atual2 = atual2->dir;
+        }
+        vertice->dados = atual2->dados;
+        if (pai2->dir == atual2) {
+            pai2->dir = atual2->esq;
+        } else {
+            pai2->esq = atual2->esq;
+        }
+        if (atual2->esq != NULL) {
+            atual2->esq->pai = pai;
+        }
+        apaga_arvoreIdade(arvore, atual2);
+    }
+    // Caso 3: Nó com um filho
+    E_arvore_busca *filho;
+    if (vertice->esq != NULL) {
+      filho = vertice->esq;
+    } else {
+      filho = vertice->dir;
+    }
+    if (vertice == arvore->raiz) {
+        arvore->raiz = filho;
+    } else if (pai->esq == vertice) {
+        pai->esq = filho;
+    } else {
+        pai->dir = filho;
+    }
+    if (filho != NULL) {
+        filho->pai = pai;
+    }
+    free(vertice);
+    arvore->qtde--;
+}
+void apaga_arvoreMes(Arvore_busca *arvore, E_arvore_busca *vertice) {
+    if (arvore == NULL || vertice == NULL) return;
+    Registro *remove = vertice->dados;
+    E_arvore_busca *atual = arvore->raiz;
+    E_arvore_busca *pai = NULL;
+    // Busca o nó a ser removido considerando rg
+    while (atual != NULL && (strcmp(vertice->dados->rg, atual->dados->rg) != 0)) {
+        pai = atual;
+        if (vertice->dados->entrada->mes < atual->dados->entrada->mes) {
+            atual = atual->esq;
+        } else {
+            atual = atual->dir;
+        }
+    }
+    if (atual == NULL) { // Não encontrou 
+        return;
+    }
+    // Caso 1: Nó sem filhos
+    if (vertice->esq == NULL && vertice->dir == NULL) {
+        if (vertice == arvore->raiz) {
+            arvore->raiz = NULL;
+        } else {
+            if (pai->esq == vertice) {
+                pai->esq = NULL;
+            } else {
+                pai->dir = NULL;
+            }
+        }
+        free(vertice);
+        arvore->qtde--;
+        return;
+    }
+    // Caso 2: Nó com dois filhos
+    if (vertice->esq != NULL && vertice->dir != NULL) {
+        E_arvore_busca *atual2 = vertice->esq;
+        E_arvore_busca *pai2 = vertice;
+        while (atual2->dir != NULL) {
+            pai2 = atual2;
+            atual2 = atual2->dir;
+        }
+        vertice->dados = atual2->dados;
+        if (pai2->dir == atual2) {
+            pai2->dir = atual2->esq;
+        } else {
+            pai2->esq = atual2->esq;
+        }
+        if (atual2->esq != NULL) {
+            atual2->esq->pai = pai;
+        }
+        apaga_arvoreIdade(arvore, atual2);
+    }
+    // Caso 3: Nó com um filho
+    E_arvore_busca *filho;
+    if (vertice->esq != NULL) {
+      filho = vertice->esq;
+    } else {
+      filho = vertice->dir;
+    }
+    if (vertice == arvore->raiz) {
+        arvore->raiz = filho;
+    } else if (pai->esq == vertice) {
+        pai->esq = filho;
+    } else {
+        pai->dir = filho;
+    }
+    if (filho != NULL) {
+        filho->pai = pai;
+    }
+    free(vertice);
+    arvore->qtde--;
+}
+void apaga_arvoreDia(Arvore_busca *arvore, E_arvore_busca *vertice) {
+    if (arvore == NULL || vertice == NULL) return;
+    Registro *remove = vertice->dados;
+    E_arvore_busca *atual = arvore->raiz;
+    E_arvore_busca *pai = NULL;
+    // Busca o nó a ser removido considerando rg
+    while (atual != NULL && (strcmp(vertice->dados->rg, atual->dados->rg) != 0)) {
+        pai = atual;
+        if (vertice->dados->entrada->dia < atual->dados->entrada->dia) {
+            atual = atual->esq;
+        } else {
+            atual = atual->dir;
+        }
+    }
+    if (atual == NULL) { // Não encontrou 
+        return;
+    }
+    // Caso 1: Nó sem filhos
+    if (vertice->esq == NULL && vertice->dir == NULL) {
+        if (vertice == arvore->raiz) {
+            arvore->raiz = NULL;
+        } else {
+            if (pai->esq == vertice) {
+                pai->esq = NULL;
+            } else {
+                pai->dir = NULL;
+            }
+        }
+        free(vertice);
+        arvore->qtde--;
+        return;
+    }
+    // Caso 2: Nó com dois filhos
+    if (vertice->esq != NULL && vertice->dir != NULL) {
+        E_arvore_busca *atual2 = vertice->esq;
+        E_arvore_busca *pai2 = vertice;
+        while (atual2->dir != NULL) {
+            pai2 = atual2;
+            atual2 = atual2->dir;
+        }
+        vertice->dados = atual2->dados;
+        if (pai2->dir == atual2) {
+            pai2->dir = atual2->esq;
+        } else {
+            pai2->esq = atual2->esq;
+        }
+        if (atual2->esq != NULL) {
+            atual2->esq->pai = pai;
+        }
+        apaga_arvoreIdade(arvore, atual2);
+    }
+    // Caso 3: Nó com um filho
+    E_arvore_busca *filho;
+    if (vertice->esq != NULL) {
+      filho = vertice->esq;
+    } else {
+      filho = vertice->dir;
+    }
+    if (vertice == arvore->raiz) {
+        arvore->raiz = filho;
+    } else if (pai->esq == vertice) {
+        pai->esq = filho;
+    } else {
+        pai->dir = filho;
+    }
+    if (filho != NULL) {
+        filho->pai = pai;
+    }
+    free(vertice);
+    arvore->qtde--;
+}
+void apaga_arvoreIdade(Arvore_busca *arvore, E_arvore_busca *vertice) {
+    if (arvore == NULL || vertice == NULL) return;
+    Registro *remove = vertice->dados;
+    E_arvore_busca *atual = arvore->raiz;
+    E_arvore_busca *pai = NULL;
+    // Busca o nó a ser removido considerando rg
+    while (atual != NULL && (strcmp(vertice->dados->rg, atual->dados->rg) != 0)) {
+        pai = atual;
+        if (vertice->dados->idade < atual->dados->idade) {
+            atual = atual->esq;
+        } else {
+            atual = atual->dir;
+        }
+    }
+    if (atual == NULL) { // Não encontrou o nó
+        return;
+    }
+    // Caso 1: Nó sem filhos
+    if (vertice->esq == NULL && vertice->dir == NULL) {
+        if (vertice == arvore->raiz) {
+            arvore->raiz = NULL;
+        } else {
+            if (pai->esq == vertice) {
+                pai->esq = NULL;
+            } else {
+                pai->dir = NULL;
+            }
+        }
+        free(vertice);
+        arvore->qtde--;
+        return;
+    }
+    // Caso 2: Nó com dois filhos
+    if (vertice->esq != NULL && vertice->dir != NULL) {
+        E_arvore_busca *atual2 = vertice->esq;
+        E_arvore_busca *pai2 = vertice;
+        while (atual2->dir != NULL) {
+            pai2 = atual2;
+            atual2 = atual2->dir;
+        }
+        vertice->dados = atual2->dados;
+        if (pai2->dir == atual2) {
+            pai2->dir = atual2->esq;
+        } else {
+            pai2->esq = atual2->esq;
+        }
+        if (atual2->esq != NULL) {
+            atual2->esq->pai = pai;
+        }
+        apaga_arvoreIdade(arvore, atual2);
+    }
+    // Caso 3: Nó com um filho
+    E_arvore_busca *filho;
+    if (vertice->esq != NULL) {
+      filho = vertice->esq;
+    } else {
+      filho = vertice->dir;
+    }
+    if (vertice == arvore->raiz) {
+        arvore->raiz = filho;
+    } else if (pai->esq == vertice) {
+        pai->esq = filho;
+    } else {
+        pai->dir = filho;
+    }
+    if (filho != NULL) {
+        filho->pai = pai;
+    }
+    free(vertice);
+    arvore->qtde--;
+}
+
+E_arvore_busca* buscar_valorAno(Arvore_busca *arvore, Registro *pessoa){
+  E_arvore_busca* atual = arvore->raiz;
+  E_arvore_busca* anterior = NULL;
+  while (atual != NULL && strcmp(pessoa->rg, atual->dados->rg) != 0) {
+    anterior = atual;
+    if (pessoa->entrada->ano < atual->dados->entrada->ano) {
+        atual = atual->esq;
+    } else {
+        atual = atual->dir;
+    }
+  }
+  if(atual != NULL){
+    return atual;
+  }else{
+    return NULL;
+  }
+}
+E_arvore_busca* buscar_valorMes(Arvore_busca *arvore, Registro *pessoa){
+  E_arvore_busca* atual = arvore->raiz;
+  E_arvore_busca* anterior = NULL;
+  while (atual != NULL && strcmp(pessoa->rg, atual->dados->rg) != 0) {
+    anterior = atual;
+    if (pessoa->entrada->mes < atual->dados->entrada->mes) {
+        atual = atual->esq;
+    } else {
+        atual = atual->dir;
+    }
+  }
+  if(atual != NULL){
+    return atual;
+  }else{
+    return NULL;
+  }
+}
+E_arvore_busca* buscar_valorDia(Arvore_busca *arvore, Registro *pessoa){
+  E_arvore_busca* atual = arvore->raiz;
+  E_arvore_busca* anterior = NULL;
+  while (atual != NULL && strcmp(pessoa->rg, atual->dados->rg) != 0) {
+    anterior = atual;
+    if (pessoa->entrada->dia < atual->dados->entrada->dia) {
+        atual = atual->esq;
+    } else {
+        atual = atual->dir;
+    }
+  }
+  if(atual != NULL){
+    return atual;
+  }else{
+    return NULL;
+  }
+}
+E_arvore_busca* buscar_valorIdade(Arvore_busca *arvore, Registro *pessoa){
+  E_arvore_busca* atual = arvore->raiz;
+  E_arvore_busca* anterior = NULL;
+  while (atual != NULL && strcmp(pessoa->rg, atual->dados->rg) != 0) {
+    anterior = atual;
+    if (pessoa->idade < atual->dados->idade) {
+        atual = atual->esq;
+    } else {
+        atual = atual->dir;
+    }
+  }
+  if(atual != NULL){
+    return atual;
+  }else{
+    return NULL;
+  }
+}
 // para a pilha (desfazer operacao)
 Epilha *criaEPilha(int operacao, Registro *r) {
   Epilha *celula = malloc(sizeof(Epilha));
@@ -752,43 +1116,51 @@ void salvaArquivo(Lista *lista, char *nomeArquivo){
   printf("\n");
 }
 
-void lerArquivo(Lista *lista, char *nomeArquivo, Arvore_busca *arvoreAno, Arvore_busca *arvoreMes, Arvore_busca *arvoreDia, Arvore_busca *arvoreIdade){
-  FILE *arquivo = fopen(nomeArquivo, "rb");
-  if (arquivo == NULL) {
-    printf("Falha ao abrir o arquivo");
-    return;
-  }
-  Registro registro;
-  Data data;
-  while (fread(&registro, sizeof(Registro), 1, arquivo) == 1) { 
-      fread(&data, sizeof(Data), 1, arquivo); 
-      Data *novaData = criaData(data.dia, data.mes, data.ano);
-      Registro *pessoa = salvarPessoa(registro.nome, registro.idade, registro.rg, novaData);
-      if (pessoa != NULL) {
-         Elista *novo = criaElista(pessoa);
-         //Adicionar no final da lista
-         if (lista->inicio == NULL) {
-           lista->inicio = novo;
-         }else{
-           Elista *atual = lista->inicio;
-            Elista *anterior = NULL;
-            while (atual != NULL) {
-              anterior = atual;
-              atual = atual->prox;
-            }
-            anterior->prox = novo;
-         }
-        lista->qtde++;
-        //Adicionar na arvore
-        registroOrdenadoAno(arvoreAno, pessoa);
-        registroOrdenadoMes(arvoreMes, pessoa);
-        registroOrdenadoDia(arvoreDia, pessoa);
-        registroOrdenadoIdade(arvoreIdade, pessoa);
-      }
-  }
-  fclose(arquivo);
-  printf("Dados carregados com sucesso!\n");
-  printf("\n");
+int lerArquivo(Lista *lista,int cont, char *nomeArquivo, Arvore_busca *arvoreAno, Arvore_busca *arvoreMes, Arvore_busca *arvoreDia, Arvore_busca *arvoreIdade){
+  if(cont == 0){
+    FILE *arquivo = fopen(nomeArquivo, "rb");
+    if (arquivo == NULL) {
+      printf("Falha ao abrir o arquivo");
+      return -1;
+    }
+    Registro registro;
+    Data data;
+    while (fread(&registro, sizeof(Registro), 1, arquivo) == 1) { 
+        fread(&data, sizeof(Data), 1, arquivo); 
+        Data *novaData = criaData(data.dia, data.mes, data.ano);
+        Registro *pessoa = salvarPessoa(registro.nome, registro.idade, registro.rg, novaData);
+        if (pessoa != NULL) {
+           Elista *novo = criaElista(pessoa);
+           //Adicionar no final da lista
+           if (lista->inicio == NULL) {
+             lista->inicio = novo;
+           }else{
+             Elista *atual = lista->inicio;
+              Elista *anterior = NULL;
+              while (atual != NULL) {
+                anterior = atual;
+                atual = atual->prox;
+              }
+              anterior->prox = novo;
+           }
+          lista->qtde++;
+          //Adicionar na arvore
+          registroOrdenadoAno(arvoreAno, pessoa);
+          registroOrdenadoMes(arvoreMes, pessoa);
+          registroOrdenadoDia(arvoreDia, pessoa);
+          registroOrdenadoIdade(arvoreIdade, pessoa);
+        }
+    }
+    fclose(arquivo);
+    printf("Dados carregados com sucesso!\n");
+    printf("\n");
+    cont++;
+    return cont;
+ }else{
+    printf("Arquivo já carregado\n");
+    printf("\n");
+    return cont;
+ }
 }
 
 void sobre() {

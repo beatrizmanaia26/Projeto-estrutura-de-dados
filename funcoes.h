@@ -93,7 +93,7 @@ void cadastrar(Lista *lista, Arvore_busca *arvoreAno, Arvore_busca *arvoreMes, A
 void consultar(Lista *lista);
 void mostrarLista(Lista *lista);
 void atualizarDados(Lista *lista);
-void removerPaciente(Lista *lista);
+void removerPaciente(Lista *lista, Arvore_busca *arvoreAno, Arvore_busca *arvoreMes, Arvore_busca *arvoreDia, Arvore_busca *arvoreIdade);
 
 // funcoes atendimento
 void enfileirarPaciente(Lista *lista, Fila *fila, Pilha *stack, Registro *r);
@@ -113,8 +113,18 @@ void enfileirarPacienteAutomatico(Lista *lista, Fila *fila, Registro *r, Pilha *
 void DesfazerOperacao(Lista *lista, Fila *fila, Pilha *stack); 
 
 void salvaArquivo(Lista *lista, char *nomeArquivo);
-void lerArquivo(Lista *lista, char *nomeArquivo, Arvore_busca *arvoreAno, Arvore_busca *arvoreMes, Arvore_busca *arvoreDia, Arvore_busca *arvoreIdade);
+int lerArquivo(Lista *lista,int cont, char *nomeArquivo, Arvore_busca *arvoreAno, Arvore_busca *arvoreMes, Arvore_busca *arvoreDia, Arvore_busca *arvoreIdade);
 void sobre();
+
+E_arvore_busca* buscar_valorAno(Arvore_busca *arvore, Registro *pessoa);
+E_arvore_busca* buscar_valorMes(Arvore_busca *arvore, Registro *pessoa);
+E_arvore_busca* buscar_valorDia(Arvore_busca *arvore, Registro *pessoa);
+E_arvore_busca* buscar_valorIdade(Arvore_busca *arvore, Registro *r);
+
+void apaga_arvoreAno(Arvore_busca *arvore, E_arvore_busca *vertice);
+void apaga_arvoreMes(Arvore_busca *arvore, E_arvore_busca *vertice);
+void apaga_arvoreDia(Arvore_busca *arvore, E_arvore_busca *vertice);
+void apaga_arvoreIdade(Arvore_busca *arvore, E_arvore_busca *vertice);
 
 void clearBuffer();
 // guarda de inclusao (garante que conteudo do arquivo é incluido apenas 1x em

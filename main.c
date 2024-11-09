@@ -7,6 +7,7 @@ int main(void) {
   Lista *lista = criaLista();
   Fila *fila = criaFila();
   Pilha *stack = criaPilha();
+  int cont = 0;
   Arvore_busca *arvoreAno = criaArvore();
   Arvore_busca *arvoreMes = criaArvore();
   Arvore_busca *arvoreDia = criaArvore();
@@ -28,7 +29,7 @@ int main(void) {
       DesfazerOperacao(lista, fila, stack);
     break;
     case 5:
-      lerArquivo(lista, arquivo,arvoreAno, arvoreMes, arvoreDia, arvoreIdade);
+      cont = lerArquivo(lista, cont, arquivo,arvoreAno, arvoreMes, arvoreDia, arvoreIdade);
     break;
     case 6:
       salvaArquivo(lista, arquivo);
